@@ -12,7 +12,7 @@ import os
 # from v1_exhibitor_app.test_data_manager import GoogleSheetsManager
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from test_data_manager import GoogleSheetsManager
+from data.test_data_manager import GoogleSheetsManager
 
 
 # Page configuration with friendly title and wide layout
