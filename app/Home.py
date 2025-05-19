@@ -6,7 +6,7 @@ from PIL import Image
 import sys
 import os
 # Import custom components
-from components import create_landing_animation, create_card_layout
+# from components import create_landing_animation, create_card_layout
 
 # # from data.test_data_manager import GoogleSheetsManager
 # from v1_exhibitor_app.test_data_manager import GoogleSheetsManager
