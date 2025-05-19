@@ -19,6 +19,23 @@ class GoogleSheetsManager:
         # self._connect()
         self.client = self._connect()
         
+    # @st.cache_resource(ttl=3600)
+    # def _connect(_self):
+    #     """Établit la connexion à l'API Google Sheets."""
+    #     try:
+    #         # Récupérer les identifiants depuis les secrets Streamlit
+    #         credentials = Credentials.from_service_account_info(
+    #             st.secrets["gcp_service_account"],
+    #             scopes=_self.scopes
+    #         )
+            
+    #         # Créer le client gspread
+    #         _self.client = gspread.authorize(credentials)
+    #         return _self.client
+    #     except Exception as e:
+    #         st.error(f"Erreur de connexion à Google Sheets: {e}")
+    #         return None
+
     @st.cache_resource(ttl=3600)
     def _connect(_self):
         """Établit la connexion à l'API Google Sheets."""
@@ -30,11 +47,11 @@ class GoogleSheetsManager:
             )
             
             # Créer le client gspread
-            _self.client = gspread.authorize(credentials)
-            return _self.client
+            return gspread.authorize(credentials)
         except Exception as e:
             st.error(f"Erreur de connexion à Google Sheets: {e}")
             return None
+
     
     def get_worksheets(self, sheet_id):
         """Récupère la liste des feuilles d'un classeur Google Sheets."""
@@ -64,32 +81,47 @@ class GoogleSheetsManager:
     #         st.error(f"Erreur lors de la récupération des données: {e}")
     #         return pd.DataFrame()
 
+    # def get_data(self, sheet_id, worksheet_name):
+    #     """Récupère les données d'une feuille Google Sheets."""
+    #     try:
+    #         # Utiliser la même approche de connexion que dans add_order
+    #         scope = ["https://www.googleapis.com/auth/spreadsheets", 
+    #                 "https://www.googleapis.com/auth/drive"]
+    #         creds = Credentials.from_service_account_file(
+    #             "S:\\Work (Souhail)\\Archive\\Dashboard Web\\gestion-exposants-eb6f7767a2ad.json", 
+    #             scopes=scope
+    #         )
+    #         gc = gspread.authorize(creds)
+            
+    #         # Ouvrir le classeur et accéder à la feuille
+    #         spreadsheet = gc.open_by_key(sheet_id)
+    #         worksheet = spreadsheet.worksheet(worksheet_name)
+            
+    #         # Récupérer les données sous forme de DataFrame
+    #         data = get_as_dataframe(worksheet, evaluate_formulas=True, skipinitialspace=True)
+            
+    #         # Nettoyer le DataFrame (supprimer les lignes vides)
+    #         data = data.dropna(how='all').reset_index(drop=True)
+            
+    #         return data
+    #     except Exception as e:
+    #         # st.error(f"Erreur lors de la récupération des données: {e}")
+    #         return pd.DataFrame()
+
+
     def get_data(self, sheet_id, worksheet_name):
         """Récupère les données d'une feuille Google Sheets."""
         try:
-            # Utiliser la même approche de connexion que dans add_order
-            scope = ["https://www.googleapis.com/auth/spreadsheets", 
-                    "https://www.googleapis.com/auth/drive"]
-            creds = Credentials.from_service_account_file(
-                "S:\\Work (Souhail)\\Archive\\Dashboard Web\\gestion-exposants-eb6f7767a2ad.json", 
-                scopes=scope
-            )
-            gc = gspread.authorize(creds)
-            
-            # Ouvrir le classeur et accéder à la feuille
-            spreadsheet = gc.open_by_key(sheet_id)
-            worksheet = spreadsheet.worksheet(worksheet_name)
-            
-            # Récupérer les données sous forme de DataFrame
-            data = get_as_dataframe(worksheet, evaluate_formulas=True, skipinitialspace=True)
-            
-            # Nettoyer le DataFrame (supprimer les lignes vides)
-            data = data.dropna(how='all').reset_index(drop=True)
-            
-            return data
+            sheet = self.client.open_by_key(sheet_id)
+            worksheet = sheet.worksheet(worksheet_name)
+            df = get_as_dataframe(worksheet, evaluate_formulas=True, skipinitialspace=True)
+            df = df.dropna(how='all').reset_index(drop=True)
+            return df
         except Exception as e:
             # st.error(f"Erreur lors de la récupération des données: {e}")
             return pd.DataFrame()
+
+    
     
     def update_order_status(self, sheet_id, worksheet, booth_num, item_name, color, status, user):
         """Met à jour le statut d'une commande dans le classeur Order Tracking."""
@@ -168,23 +200,64 @@ class GoogleSheetsManager:
             st.error(f"Erreur lors de la mise à jour de l'élément de checklist: {e}")
             return False
     
+    # def add_order(self, sheet_id, order_data):
+    #     """Ajoute une nouvelle commande en utilisant la méthode directe qui fonctionne."""
+    #     try:
+    #         # Utiliser directement l'approche qui fonctionne
+    #         scope = ["https://www.googleapis.com/auth/spreadsheets"]
+    #         creds = Credentials.from_service_account_file(
+    #             "S:\\Work (Souhail)\\Archive\\Dashboard Web\\gestion-exposants-eb6f7767a2ad.json", 
+    #             scopes=scope
+    #         )
+    #         gc = gspread.authorize(creds)
+    #         sh = gc.open_by_key(sheet_id)
+    #         orders_sheet = sh.worksheet("Orders")
+            
+    #         # Préparer les données à insérer
+    #         now = datetime.now()
+            
+    #         # Créer une liste de valeurs pour la nouvelle ligne
+    #         row_data = [
+    #             order_data.get('Booth #', ''),
+    #             order_data.get('Section', ''),
+    #             order_data.get('Exhibitor Name', ''),
+    #             order_data.get('Item', ''),
+    #             order_data.get('Color', ''),
+    #             order_data.get('Quantity', ''),
+    #             now.strftime("%m/%d/%Y"),  # Date
+    #             now.strftime("%I:%M:%S %p"),  # Heure
+    #             order_data.get('Status', 'New'),
+    #             order_data.get('Type', 'New Order'),
+    #             order_data.get('Boomers Quantity', ''),
+    #             order_data.get('Comments', ''),
+    #             order_data.get('User', '')
+    #         ]
+            
+    #         # Insérer la nouvelle ligne
+    #         orders_sheet.append_row(row_data)
+            
+    #         # Mettre à jour également la feuille de section correspondante
+    #         section = order_data.get('Section', '')
+    #         if section:
+    #             try:
+    #                 section_sheet = sh.worksheet(section)
+    #                 section_sheet.append_row(row_data)
+    #             except Exception as section_error:
+    #                 # La feuille de section n'existe pas ou erreur
+    #                 pass
+            
+    #         return True
+    #     except Exception as e:
+    #         st.error(f"Erreur lors de l'ajout de la commande: {e}")
+    #         return False
+
+
     def add_order(self, sheet_id, order_data):
-        """Ajoute une nouvelle commande en utilisant la méthode directe qui fonctionne."""
+        """Ajoute une commande à Google Sheets."""
         try:
-            # Utiliser directement l'approche qui fonctionne
-            scope = ["https://www.googleapis.com/auth/spreadsheets"]
-            creds = Credentials.from_service_account_file(
-                "S:\\Work (Souhail)\\Archive\\Dashboard Web\\gestion-exposants-eb6f7767a2ad.json", 
-                scopes=scope
-            )
-            gc = gspread.authorize(creds)
-            sh = gc.open_by_key(sheet_id)
-            orders_sheet = sh.worksheet("Orders")
-            
-            # Préparer les données à insérer
+            sheet = self.client.open_by_key(sheet_id)
+            worksheet = sheet.worksheet("Orders")
             now = datetime.now()
-            
-            # Créer une liste de valeurs pour la nouvelle ligne
             row_data = [
                 order_data.get('Booth #', ''),
                 order_data.get('Section', ''),
@@ -192,35 +265,85 @@ class GoogleSheetsManager:
                 order_data.get('Item', ''),
                 order_data.get('Color', ''),
                 order_data.get('Quantity', ''),
-                now.strftime("%m/%d/%Y"),  # Date
-                now.strftime("%I:%M:%S %p"),  # Heure
+                now.strftime("%m/%d/%Y"),
+                now.strftime("%I:%M:%S %p"),
                 order_data.get('Status', 'New'),
                 order_data.get('Type', 'New Order'),
                 order_data.get('Boomers Quantity', ''),
                 order_data.get('Comments', ''),
                 order_data.get('User', '')
             ]
-            
-            # Insérer la nouvelle ligne
-            orders_sheet.append_row(row_data)
-            
-            # Mettre à jour également la feuille de section correspondante
+            worksheet.append_row(row_data)
+    
+            # Optional: also add to section sheet if it exists
             section = order_data.get('Section', '')
             if section:
                 try:
-                    section_sheet = sh.worksheet(section)
-                    section_sheet.append_row(row_data)
-                except Exception as section_error:
-                    # La feuille de section n'existe pas ou erreur
-                    pass
-            
+                    section_ws = sheet.worksheet(section)
+                    section_ws.append_row(row_data)
+                except:
+                    pass  # Ignore if the section sheet doesn't exist
+    
             return True
         except Exception as e:
             st.error(f"Erreur lors de l'ajout de la commande: {e}")
             return False
+    
 
+
+    
     # First, add a function to GoogleSheetsManager in data/test_data_manager.py
     # Add this method to your GoogleSheetsManager class:
+
+    # def delete_order(self, sheet_id, worksheet, booth_num, item_name, color):
+    #     """
+    #     Delete an order from Google Sheets
+        
+    #     Args:
+    #         sheet_id (str): The ID of the Google Sheet
+    #         worksheet (str): The name of the worksheet
+    #         booth_num (str): The booth number of the order to delete
+    #         item_name (str): The item name of the order to delete
+    #         color (str): The color of the item to delete
+        
+    #     Returns:
+    #         bool: True if successful, False otherwise
+    #     """
+    #     try:
+    #         # Open the specified worksheet
+    #         sheet = self.client.open_by_key(sheet_id).worksheet(worksheet)
+            
+    #         # Get all data
+    #         data = sheet.get_all_values()
+    #         if not data:
+    #             return False
+            
+    #         # Find the row with matching booth number, item name, and color
+    #         header_row = data[0]
+    #         booth_col = header_row.index('Booth #') if 'Booth #' in header_row else None
+    #         item_col = header_row.index('Item') if 'Item' in header_row else None
+    #         color_col = header_row.index('Color') if 'Color' in header_row else None
+            
+    #         if booth_col is None or item_col is None or color_col is None:
+    #             return False
+            
+    #         row_to_delete = None
+    #         for i in range(1, len(data)):
+    #             if (str(data[i][booth_col]) == str(booth_num) and 
+    #                 data[i][item_col] == str(item_name) and 
+    #                 data[i][color_col] == str(color)):
+    #                 row_to_delete = i + 1  # +1 because Google Sheets is 1-indexed
+    #                 break
+            
+    #         if row_to_delete:
+    #             sheet.delete_rows(row_to_delete)
+    #             return True
+    #         return False
+        
+    #     except Exception as e:
+    #         print(f"Error deleting order: {e}")
+    #         return False
+
 
     def delete_order(self, sheet_id, worksheet, booth_num, item_name, color):
         """
@@ -270,6 +393,10 @@ class GoogleSheetsManager:
         except Exception as e:
             print(f"Error deleting order: {e}")
             return False
+    
+
+
+    
 
     # Next, add a direct deletion function in data/direct_sheets_operations.py
     # Add this function:
