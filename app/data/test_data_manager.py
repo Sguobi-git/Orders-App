@@ -62,51 +62,6 @@ class GoogleSheetsManager:
             st.error(f"Erreur lors de la récupération des feuilles: {e}")
             return []
             
-    # @st.cache_data(ttl=60)
-    # def get_data(_self, sheet_id, worksheet_name):
-    #     """Récupère les données d'une feuille Google Sheets."""
-    #     try:
-    #         # Ouvrir le classeur et accéder à la feuille
-    #         spreadsheet = _self.client.open_by_key(sheet_id)
-    #         worksheet = spreadsheet.worksheet(worksheet_name)
-            
-    #         # Récupérer les données sous forme de DataFrame
-    #         data = get_as_dataframe(worksheet, evaluate_formulas=True, skipinitialspace=True)
-            
-    #         # Nettoyer le DataFrame (supprimer les lignes vides)
-    #         data = data.dropna(how='all').reset_index(drop=True)
-            
-    #         return data
-    #     except Exception as e:
-    #         st.error(f"Erreur lors de la récupération des données: {e}")
-    #         return pd.DataFrame()
-
-    # def get_data(self, sheet_id, worksheet_name):
-    #     """Récupère les données d'une feuille Google Sheets."""
-    #     try:
-    #         # Utiliser la même approche de connexion que dans add_order
-    #         scope = ["https://www.googleapis.com/auth/spreadsheets", 
-    #                 "https://www.googleapis.com/auth/drive"]
-    #         creds = Credentials.from_service_account_file(
-    #             "S:\\Work (Souhail)\\Archive\\Dashboard Web\\gestion-exposants-eb6f7767a2ad.json", 
-    #             scopes=scope
-    #         )
-    #         gc = gspread.authorize(creds)
-            
-    #         # Ouvrir le classeur et accéder à la feuille
-    #         spreadsheet = gc.open_by_key(sheet_id)
-    #         worksheet = spreadsheet.worksheet(worksheet_name)
-            
-    #         # Récupérer les données sous forme de DataFrame
-    #         data = get_as_dataframe(worksheet, evaluate_formulas=True, skipinitialspace=True)
-            
-    #         # Nettoyer le DataFrame (supprimer les lignes vides)
-    #         data = data.dropna(how='all').reset_index(drop=True)
-            
-    #         return data
-    #     except Exception as e:
-    #         # st.error(f"Erreur lors de la récupération des données: {e}")
-    #         return pd.DataFrame()
 
 
     def get_data(self, sheet_id, worksheet_name):
@@ -200,56 +155,7 @@ class GoogleSheetsManager:
             st.error(f"Erreur lors de la mise à jour de l'élément de checklist: {e}")
             return False
     
-    # def add_order(self, sheet_id, order_data):
-    #     """Ajoute une nouvelle commande en utilisant la méthode directe qui fonctionne."""
-    #     try:
-    #         # Utiliser directement l'approche qui fonctionne
-    #         scope = ["https://www.googleapis.com/auth/spreadsheets"]
-    #         creds = Credentials.from_service_account_file(
-    #             "S:\\Work (Souhail)\\Archive\\Dashboard Web\\gestion-exposants-eb6f7767a2ad.json", 
-    #             scopes=scope
-    #         )
-    #         gc = gspread.authorize(creds)
-    #         sh = gc.open_by_key(sheet_id)
-    #         orders_sheet = sh.worksheet("Orders")
-            
-    #         # Préparer les données à insérer
-    #         now = datetime.now()
-            
-    #         # Créer une liste de valeurs pour la nouvelle ligne
-    #         row_data = [
-    #             order_data.get('Booth #', ''),
-    #             order_data.get('Section', ''),
-    #             order_data.get('Exhibitor Name', ''),
-    #             order_data.get('Item', ''),
-    #             order_data.get('Color', ''),
-    #             order_data.get('Quantity', ''),
-    #             now.strftime("%m/%d/%Y"),  # Date
-    #             now.strftime("%I:%M:%S %p"),  # Heure
-    #             order_data.get('Status', 'New'),
-    #             order_data.get('Type', 'New Order'),
-    #             order_data.get('Boomers Quantity', ''),
-    #             order_data.get('Comments', ''),
-    #             order_data.get('User', '')
-    #         ]
-            
-    #         # Insérer la nouvelle ligne
-    #         orders_sheet.append_row(row_data)
-            
-    #         # Mettre à jour également la feuille de section correspondante
-    #         section = order_data.get('Section', '')
-    #         if section:
-    #             try:
-    #                 section_sheet = sh.worksheet(section)
-    #                 section_sheet.append_row(row_data)
-    #             except Exception as section_error:
-    #                 # La feuille de section n'existe pas ou erreur
-    #                 pass
-            
-    #         return True
-    #     except Exception as e:
-    #         st.error(f"Erreur lors de l'ajout de la commande: {e}")
-    #         return False
+
 
 
     def add_order(self, sheet_id, order_data):
