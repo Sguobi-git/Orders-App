@@ -356,8 +356,15 @@ else:
     if current_email and st.session_state.users[current_email].get("is_admin", False):
         is_admin = True
 
-    if st.button("Start", use_container_width=True):
-        change_show()
+    # Only show the button if show_button is True
+    if st.session_state.show_button:
+        # Create a column to control button width
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button("Start"):
+                change_show()
+                # Hide the button after clicking
+                st.session_state.show_button = False
         
     # Display user sidebar
     with st.sidebar:
