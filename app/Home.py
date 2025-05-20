@@ -525,7 +525,7 @@ else:
 
     # st.title(f"🎪 {st.session_state.current_show}")
     st.title(f"🎪 General Dashboard")
-    # st.caption(f"General Dashboard")
+    st.caption(f"")
         
     # Loading data
     @st.cache_data(ttl=60)  # Cache for 1 minute
