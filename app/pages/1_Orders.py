@@ -189,6 +189,11 @@ def add_new_order():
 # Filter data according to criteria
 filtered_df = orders_df.copy()
 
+# Section selector
+    section_options = ["All Sections"] + sections
+    selected_section = st.selectbox("Section", section_options)
+
+
 # Apply section filter
 if selected_section != "All Sections":
     filtered_df = filtered_df[filtered_df["Section"] == selected_section]
