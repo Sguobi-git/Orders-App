@@ -186,6 +186,33 @@ def add_new_order():
                     st.rerun()  # Reload the page
 
 
+# Filter data according to criteria
+filtered_df = orders_df.copy()
+
+# Apply section filter
+if selected_section != "All Sections":
+    filtered_df = filtered_df[filtered_df["Section"] == selected_section]
+
+# Apply status filter
+if selected_status != "All":
+    filtered_df = filtered_df[filtered_df["Status"] == selected_status]
+
+# Apply search filter
+if search_query:
+    filtered_df = filtered_df[
+        filtered_df["Booth #"].astype(str).str.contains(search_query, case=False, na=False) |
+        filtered_df["Exhibitor Name"].str.contains(search_query, case=False, na=False)
+    ]
+
+# Display number of orders found
+st.write(f"**{len(filtered_df)} orders found**")
+
+# Display data
+if not filtered_df.empty:
+    # Columns to display
+    display_columns = ["Booth #", "Section", "Exhibitor Name", "Item", "Color", 
+              "Quantity", "Date", "Hour", "Status", "Type", "Boomer's Quantity", "Comments", "User"]
+
 
 edited_df = st.data_editor(
         filtered_df[display_columns],
