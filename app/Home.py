@@ -356,24 +356,6 @@ else:
     if current_email and st.session_state.users[current_email].get("is_admin", False):
         is_admin = True
 
-
-    if 'show_button' not in st.session_state:
-        st.session_state['show_button'] = True
-
-    
-    # Only show the button if show_button is True
-    if st.session_state.show_button:
-        # Create a column to control button width
-        col1, col2, col3 = st.columns([1.5, 3, 1.5])
-        with col2:
-            # Add some vertical space
-            st.write("")
-            # Create a larger, centered button
-            if st.button("Start", key="change_show_button"):
-                change_show()
-                # Hide the button after clicking
-                st.session_state['show_button'] = False
-
     
     # Display user sidebar
     with st.sidebar:
@@ -464,6 +446,26 @@ else:
         st.divider()
         if st.button("Logout", use_container_width=True):
             logout()
+
+
+    if 'show_button' not in st.session_state:
+        st.session_state['show_button'] = True
+
+    
+    # Only show the button if show_button is True
+    if st.session_state.show_button:
+        # Create a column to control button width
+        col1, col2, col3 = st.columns([1.5, 3, 1.5])
+        with col2:
+            # Add some vertical space
+            st.write("")
+            # Create a larger, centered button
+            if st.button("Start", key="change_show_button"):
+                change_show()
+                # Hide the button after clicking
+                st.session_state['show_button'] = False
+
+
     
     # Main page (dashboard)
     if st.session_state.current_show is None:
