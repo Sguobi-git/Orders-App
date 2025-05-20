@@ -288,6 +288,8 @@ def logout():
     st.session_state.authenticated = False
     st.session_state.current_user = None
     st.session_state.current_show = None
+    # Reset the show_button state to True so it appears again on next login
+    st.session_state['show_button'] = True
     st.rerun()
 
 # Function to change show
