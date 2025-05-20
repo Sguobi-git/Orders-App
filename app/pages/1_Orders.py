@@ -190,8 +190,8 @@ def add_new_order():
 filtered_df = orders_df.copy()
 
 # Section selector
-    section_options = ["All Sections"] + sections
-    selected_section = st.selectbox("Section", section_options)
+section_options = ["All Sections"] + sections
+selected_section = st.selectbox("Section", section_options)
 
 
 # Apply section filter
