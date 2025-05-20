@@ -526,299 +526,299 @@ else:
     st.title(f"🎪 {st.session_state.current_show}")
     st.caption(f"General Dashboard")
         
-        # Loading data
-        @st.cache_data(ttl=60)  # Cache for 1 minute
-        def load_dashboard_data():
-            try:
-                # Load order data
-                orders_df = gs_manager.get_data("1dYeok-Dy_7a03AhPDLV2NNmGbRNoCD3q0zaAHPwxxCE", "Orders")
-                
-                # Redefine column names from the first row
-                if not orders_df.empty:
-                    orders_df.columns = orders_df.iloc[0].str.strip()  # Strip whitespace from column names
-                    orders_df = orders_df[1:]  # remove the now unnecessary row 0
-                    orders_df = orders_df.reset_index(drop=True)  # reindex properly
-                
-                # Load checklist data
-                checklist_df = gs_manager.get_data("19ksIroX0i3WY3XmSGXQpdS1RzjpYKhqMhwK1tYiKZZA", "Orders")
-
-                if not checklist_df.empty:
-                    checklist_df.columns = checklist_df.iloc[0].str.strip()  # Strip whitespace from column names
-                    checklist_df = checklist_df[1:]  # remove the now unnecessary row 0
-                    checklist_df = checklist_df.reset_index(drop=True)  # reindex properly
-                
-                # Load inventory
-                inventory_df = gs_manager.get_data("1dYeok-Dy_7a03AhPDLV2NNmGbRNoCD3q0zaAHPwxxCE", "Show Inventory")
-                
-                # Redefine column names for inventory
-                if not inventory_df.empty:
-                    inventory_df.columns = inventory_df.iloc[0].str.strip()  # Strip whitespace from column names
-                    inventory_df = inventory_df[1:]  # remove the now unnecessary row 0
-                    inventory_df = inventory_df.reset_index(drop=True)  # reindex properly
-                
-                return orders_df, checklist_df, inventory_df
-            except Exception as e:
-                st.error(f"Error loading data: {e}")
-                return pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
-        
-        # Load data
-        orders_df, checklist_df, inventory_df = load_dashboard_data()
-        
-        # Calculate metrics
-        if not orders_df.empty:
-            # Order metrics
-            total_orders = len(orders_df)
-            # Check if "Status" column exists before filtering
-            if "Status" in orders_df.columns:
-                delivered_orders = len(orders_df[orders_df["Status"] == "Delivered"])
-                cancelled_orders = len(orders_df[orders_df["Status"] == "cancelled"])
-                pending_orders = total_orders - delivered_orders - cancelled_orders
-                delivery_rate = int(delivered_orders / total_orders * 100) if total_orders > 0 else 0
-            else:
-                delivered_orders = 0
-                cancelled_orders = 0
-                pending_orders = total_orders
-                delivery_rate = 0
-                st.warning("Status column not found in orders data. Some metrics may not be accurate.")
+    # Loading data
+    @st.cache_data(ttl=60)  # Cache for 1 minute
+    def load_dashboard_data():
+        try:
+            # Load order data
+            orders_df = gs_manager.get_data("1dYeok-Dy_7a03AhPDLV2NNmGbRNoCD3q0zaAHPwxxCE", "Orders")
             
-            # Display metrics
-            col1, col2, col3, col4, col5 = st.columns(5)
-            
-            with col1:
-                st.metric("Total Orders", total_orders)
-            
-            with col2:
-                st.metric("Delivered", delivered_orders)
-            
-            with col3:
-                st.metric("Pending", pending_orders)
-            
-            with col4:
-                st.metric("Cancelled", cancelled_orders)
-            
-            with col5:
-                st.metric("Delivery Rate", f"{delivery_rate}%")
-            
-            # Progress bar
-            st.progress(delivery_rate / 100)
-
-            # ----------- PIE CHART OF ORDER STATUS -----------
-            if "Status" in orders_df.columns:
-                # Clean NaN values
-                status_counts = orders_df["Status"].fillna("Unknown").value_counts()
-                status_labels = status_counts.index.tolist()
-                status_values = status_counts.values.tolist()
-                # Calculate percentages
-                status_percentages = [v / sum(status_values) * 100 for v in status_values]
-                # Compose labels with both status and count
-                status_labels_with_counts = [
-                    f"{label} ({count})" for label, count in zip(status_labels, status_values)
-                ]
-
-                # Define color mapping for statuses
-                status_color_map = {
-                    "In Process": "#FFD600",  # yellow
-                    "In route from warehouse": "#FF9800",  # orange
-                    "Delivered": "#4CAF50",  # green
-                    "Cancelled": "#F44336",  # red
-                    "Received": "#2196F3",  # blue
-                }
-                # Assign colors to each status in the order of status_labels
-                # If a status is not in the map, assign a default color (gray)
-                default_color = "#BDBDBD"
-                # Extract the status (without count) for color mapping
-                status_labels_raw = status_labels  # these are the raw status names
-                color_list = [status_color_map.get(status, default_color) for status in status_labels_raw]
-
-                # Create the pie chart with Plotly
-                fig = px.pie(
-                    names=status_labels_with_counts,
-                    values=status_values,
-                    title="Order Status Distribution",
-                    hole=0.3,
-                    color_discrete_sequence=color_list
-                )
-                fig.update_traces(
-                    textinfo='percent+label',
-                    hovertemplate='%{label}: %{value} (%{percent})<extra></extra>'
-                )
-                st.subheader("Order Statuses")
-                st.plotly_chart(fig, use_container_width=True)
-            # ----------------------------------------------------------
-
-        # Button to refresh data
-        if st.button("Refresh data"):
-            st.cache_data.clear()
-            st.rerun()
-        
-        # Dashboard sections
-        # tab1, tab2, tab3 = st.tabs(["Latest Orders", "Inventory", "Checklist Progress"])
-        tab1, tab2 = st.tabs(["Latest Orders", "Inventory"])
-        
-        with tab1:
+            # Redefine column names from the first row
             if not orders_df.empty:
-                # Check if Date and Hour columns exist before sorting
-                if "Date" in orders_df.columns and "Hour" in orders_df.columns:
-                    # Convert Date and Hour to datetime for proper sorting
-                    try:
-                        # Create a temporary column for sorting
-                        orders_df['datetime_sort'] = pd.to_datetime(
-                            orders_df['Date'] + ' ' + orders_df['Hour'], 
-                            errors='coerce',
-                            format='%m/%d/%Y %I:%M:%S %p'
-                        )
-                        
-                        # Sort by the datetime column
-                        last_orders = orders_df.sort_values(by='datetime_sort', ascending=False).head(10)
-                        
-                        # Drop the temporary column
-                        last_orders = last_orders.drop(columns=['datetime_sort'])
-                    except Exception as e:
-                        st.warning(f"Error converting dates for sorting: {e}")
-                        # Fallback to original sorting method
-                        last_orders = orders_df.sort_values(by=["Date", "Hour"], ascending=False).head(10)
-                else:
-                    sort_columns = []
-                    if "Date" in orders_df.columns:
-                        sort_columns.append("Date")
-                    if "Hour" in orders_df.columns:
-                        sort_columns.append("Hour")
-                    
-                    # Filter and display the 10 latest orders
-                    if sort_columns:
-                        last_orders = orders_df.sort_values(by=sort_columns, ascending=False).head(10)
-                    else:
-                        last_orders = orders_df.head(10)
-                        st.warning("Date/Hour columns not found. Orders may not be sorted correctly.")
-                
-                # Columns to display - check if they exist
-                available_columns = orders_df.columns.tolist()
-                display_columns = [col for col in ["Booth #", "Section", "Exhibitor Name", "Item", "Color", 
-                                   "Quantity", "Date", "Hour", "Status", "User"] if col in available_columns]
-                
-                if display_columns:
-                    st.dataframe(
-                        last_orders[display_columns], 
-                        use_container_width=True
-                    )
-                else:
-                    st.error("No valid columns found to display orders.")
-            else:
-                st.info("No order data available.")
-        
-        with tab2:
+                orders_df.columns = orders_df.iloc[0].str.strip()  # Strip whitespace from column names
+                orders_df = orders_df[1:]  # remove the now unnecessary row 0
+                orders_df = orders_df.reset_index(drop=True)  # reindex properly
+            
+            # Load checklist data
+            checklist_df = gs_manager.get_data("19ksIroX0i3WY3XmSGXQpdS1RzjpYKhqMhwK1tYiKZZA", "Orders")
+
+            if not checklist_df.empty:
+                checklist_df.columns = checklist_df.iloc[0].str.strip()  # Strip whitespace from column names
+                checklist_df = checklist_df[1:]  # remove the now unnecessary row 0
+                checklist_df = checklist_df.reset_index(drop=True)  # reindex properly
+            
+            # Load inventory
+            inventory_df = gs_manager.get_data("1dYeok-Dy_7a03AhPDLV2NNmGbRNoCD3q0zaAHPwxxCE", "Show Inventory")
+            
+            # Redefine column names for inventory
             if not inventory_df.empty:
-                # Filter to display only relevant columns that exist
-                inventory_columns = [col for col in ["Items", "Load List", "Pull List", 
-                                     "Starting Quantity", "Ordered items", "Damaged Items", 
-                                     "Available Quantity", "Requested to the Warehouse", 
-                                     "Requested Date and Time"] if col in inventory_df.columns]
-                
-                if inventory_columns:
-                    # Display inventory
-                    st.dataframe(inventory_df[inventory_columns], use_container_width=True)
-                    
-                    # Select items with low available quantity if column exists
-                    if "Available Quantity" in inventory_df.columns:
-                        try:
-                            # Convert to numeric if possible
-                            inventory_df["Available Quantity"] = pd.to_numeric(inventory_df["Available Quantity"], errors="coerce")
-                            low_inventory = inventory_df[inventory_df["Available Quantity"] < 10]
-                            
-                            if not low_inventory.empty:
-                                st.subheader("⚠️ Low quantity items")
-                                st.dataframe(
-                                    low_inventory[inventory_columns],
-                                    use_container_width=True,
-                                    hide_index=True
-                                )
-                        except Exception as e:
-                            st.warning(f"Could not process inventory quantities: {e}")
-                else:
-                    st.error("No valid columns found to display inventory.")
-            else:
-                st.info("No inventory data available.")
+                inventory_df.columns = inventory_df.iloc[0].str.strip()  # Strip whitespace from column names
+                inventory_df = inventory_df[1:]  # remove the now unnecessary row 0
+                inventory_df = inventory_df.reset_index(drop=True)  # reindex properly
+            
+            return orders_df, checklist_df, inventory_df
+        except Exception as e:
+            st.error(f"Error loading data: {e}")
+            return pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
+    
+    # Load data
+    orders_df, checklist_df, inventory_df = load_dashboard_data()
+    
+    # Calculate metrics
+    if not orders_df.empty:
+        # Order metrics
+        total_orders = len(orders_df)
+        # Check if "Status" column exists before filtering
+        if "Status" in orders_df.columns:
+            delivered_orders = len(orders_df[orders_df["Status"] == "Delivered"])
+            cancelled_orders = len(orders_df[orders_df["Status"] == "cancelled"])
+            pending_orders = total_orders - delivered_orders - cancelled_orders
+            delivery_rate = int(delivered_orders / total_orders * 100) if total_orders > 0 else 0
+        else:
+            delivered_orders = 0
+            cancelled_orders = 0
+            pending_orders = total_orders
+            delivery_rate = 0
+            st.warning("Status column not found in orders data. Some metrics may not be accurate.")
         
-        # with tab3:
-        #     # Check if checklist_df is empty or not
-        #     if not checklist_df.empty:
-        #         # Check if Status column exists
-        #         if "Status" in checklist_df.columns:
-        #             # Calculate checklist progress
-        #             total_items = len(checklist_df)
-        #             completed_items = len(checklist_df[checklist_df["Status"] == True])
-        #             completion_percentage = int((completed_items / total_items * 100) if total_items > 0 else 0)
-                    
-        #             col1, col2, col3 = st.columns(3)
-                    
-        #             with col1:
-        #                 st.metric("Total items", total_items)
-                    
-        #             with col2:
-        #                 st.metric("Checked items", completed_items)
-                    
-        #             with col3:
-        #                 st.metric("Progress", f"{completion_percentage}%")
-                    
-        #             # Progress bar
-        #             st.progress(completion_percentage / 100)
-        #         else:
-        #             st.warning("Status column not found in checklist data.")
-                
-        #         # Display by section
-        #         try:
-        #             # Get list of sections
-        #             sections = gs_manager.get_worksheets("19ksIroX0i3WY3XmSGXQpdS1RzjpYKhqMhwK1tYiKZZA")
-        #             sections = [s for s in sections if s.startswith("Section") or s == "No Section"]
-                    
-        #             # Progress data by section
-        #             section_progress = []
-                    
-        #             for section in sections:
-        #                 section_df = gs_manager.get_data("19ksIroX0i3WY3XmSGXQpdS1RzjpYKhqMhwK1tYiKZZA", section)
-        #                 if not section_df.empty:
-        #                     total = len(section_df)
-        #                     # Check if Status column exists
-        #                     if "Status" in section_df.columns:
-        #                         completed = len(section_df[section_df["Status"] == True])
-        #                     else:
-        #                         completed = 0
-        #                     progress = int((completed / total * 100) if total > 0 else 0)
-                            
-        #                     section_progress.append({
-        #                         "Section": section,
-        #                         "Total": total,
-        #                         "Completed": completed,
-        #                         "Progress": progress
-        #                     })
-                    
-        #             # Create DataFrame for display
-        #             progress_df = pd.DataFrame(section_progress)
-                    
-        #             # Display DataFrame
-        #             st.subheader("Progress by section")
-        #             st.dataframe(
-        #                 progress_df,
-        #                 use_container_width=True,
-        #                 hide_index=True
-        #             )
-        #         except Exception as e:
-        #             st.error(f"Error loading section data: {e}")
-        #     else:
-        #         st.info("No checklist data available.")
-                
-        # Links to other pages
-        st.divider()
-        
-        st.subheader("Quick Access")
-        
-        # col1, col2 = st.columns(2)
-        (col1,) = st.columns(1)
+        # Display metrics
+        col1, col2, col3, col4, col5 = st.columns(5)
         
         with col1:
-            st.page_link("pages/1_Orders.py", label="📦 Order Management", icon="🔗")
-            st.caption("Track and manage orders by booth")
+            st.metric("Total Orders", total_orders)
         
-        # with col2:
-        #     st.page_link("pages/2_Checklists.py", label="✅ Booth Checklist", icon="🔗")
-        #     st.caption("Check booths progress status")
+        with col2:
+            st.metric("Delivered", delivered_orders)
+        
+        with col3:
+            st.metric("Pending", pending_orders)
+        
+        with col4:
+            st.metric("Cancelled", cancelled_orders)
+        
+        with col5:
+            st.metric("Delivery Rate", f"{delivery_rate}%")
+        
+        # Progress bar
+        st.progress(delivery_rate / 100)
+
+        # ----------- PIE CHART OF ORDER STATUS -----------
+        if "Status" in orders_df.columns:
+            # Clean NaN values
+            status_counts = orders_df["Status"].fillna("Unknown").value_counts()
+            status_labels = status_counts.index.tolist()
+            status_values = status_counts.values.tolist()
+            # Calculate percentages
+            status_percentages = [v / sum(status_values) * 100 for v in status_values]
+            # Compose labels with both status and count
+            status_labels_with_counts = [
+                f"{label} ({count})" for label, count in zip(status_labels, status_values)
+            ]
+
+            # Define color mapping for statuses
+            status_color_map = {
+                "In Process": "#FFD600",  # yellow
+                "In route from warehouse": "#FF9800",  # orange
+                "Delivered": "#4CAF50",  # green
+                "Cancelled": "#F44336",  # red
+                "Received": "#2196F3",  # blue
+            }
+            # Assign colors to each status in the order of status_labels
+            # If a status is not in the map, assign a default color (gray)
+            default_color = "#BDBDBD"
+            # Extract the status (without count) for color mapping
+            status_labels_raw = status_labels  # these are the raw status names
+            color_list = [status_color_map.get(status, default_color) for status in status_labels_raw]
+
+            # Create the pie chart with Plotly
+            fig = px.pie(
+                names=status_labels_with_counts,
+                values=status_values,
+                title="Order Status Distribution",
+                hole=0.3,
+                color_discrete_sequence=color_list
+            )
+            fig.update_traces(
+                textinfo='percent+label',
+                hovertemplate='%{label}: %{value} (%{percent})<extra></extra>'
+            )
+            st.subheader("Order Statuses")
+            st.plotly_chart(fig, use_container_width=True)
+        # ----------------------------------------------------------
+
+    # Button to refresh data
+    if st.button("Refresh data"):
+        st.cache_data.clear()
+        st.rerun()
+    
+    # Dashboard sections
+    # tab1, tab2, tab3 = st.tabs(["Latest Orders", "Inventory", "Checklist Progress"])
+    tab1, tab2 = st.tabs(["Latest Orders", "Inventory"])
+    
+    with tab1:
+        if not orders_df.empty:
+            # Check if Date and Hour columns exist before sorting
+            if "Date" in orders_df.columns and "Hour" in orders_df.columns:
+                # Convert Date and Hour to datetime for proper sorting
+                try:
+                    # Create a temporary column for sorting
+                    orders_df['datetime_sort'] = pd.to_datetime(
+                        orders_df['Date'] + ' ' + orders_df['Hour'], 
+                        errors='coerce',
+                        format='%m/%d/%Y %I:%M:%S %p'
+                    )
+                    
+                    # Sort by the datetime column
+                    last_orders = orders_df.sort_values(by='datetime_sort', ascending=False).head(10)
+                    
+                    # Drop the temporary column
+                    last_orders = last_orders.drop(columns=['datetime_sort'])
+                except Exception as e:
+                    st.warning(f"Error converting dates for sorting: {e}")
+                    # Fallback to original sorting method
+                    last_orders = orders_df.sort_values(by=["Date", "Hour"], ascending=False).head(10)
+            else:
+                sort_columns = []
+                if "Date" in orders_df.columns:
+                    sort_columns.append("Date")
+                if "Hour" in orders_df.columns:
+                    sort_columns.append("Hour")
+                
+                # Filter and display the 10 latest orders
+                if sort_columns:
+                    last_orders = orders_df.sort_values(by=sort_columns, ascending=False).head(10)
+                else:
+                    last_orders = orders_df.head(10)
+                    st.warning("Date/Hour columns not found. Orders may not be sorted correctly.")
+            
+            # Columns to display - check if they exist
+            available_columns = orders_df.columns.tolist()
+            display_columns = [col for col in ["Booth #", "Section", "Exhibitor Name", "Item", "Color", 
+                               "Quantity", "Date", "Hour", "Status", "User"] if col in available_columns]
+            
+            if display_columns:
+                st.dataframe(
+                    last_orders[display_columns], 
+                    use_container_width=True
+                )
+            else:
+                st.error("No valid columns found to display orders.")
+        else:
+            st.info("No order data available.")
+    
+    with tab2:
+        if not inventory_df.empty:
+            # Filter to display only relevant columns that exist
+            inventory_columns = [col for col in ["Items", "Load List", "Pull List", 
+                                 "Starting Quantity", "Ordered items", "Damaged Items", 
+                                 "Available Quantity", "Requested to the Warehouse", 
+                                 "Requested Date and Time"] if col in inventory_df.columns]
+            
+            if inventory_columns:
+                # Display inventory
+                st.dataframe(inventory_df[inventory_columns], use_container_width=True)
+                
+                # Select items with low available quantity if column exists
+                if "Available Quantity" in inventory_df.columns:
+                    try:
+                        # Convert to numeric if possible
+                        inventory_df["Available Quantity"] = pd.to_numeric(inventory_df["Available Quantity"], errors="coerce")
+                        low_inventory = inventory_df[inventory_df["Available Quantity"] < 10]
+                        
+                        if not low_inventory.empty:
+                            st.subheader("⚠️ Low quantity items")
+                            st.dataframe(
+                                low_inventory[inventory_columns],
+                                use_container_width=True,
+                                hide_index=True
+                            )
+                    except Exception as e:
+                        st.warning(f"Could not process inventory quantities: {e}")
+            else:
+                st.error("No valid columns found to display inventory.")
+        else:
+            st.info("No inventory data available.")
+    
+    # with tab3:
+    #     # Check if checklist_df is empty or not
+    #     if not checklist_df.empty:
+    #         # Check if Status column exists
+    #         if "Status" in checklist_df.columns:
+    #             # Calculate checklist progress
+    #             total_items = len(checklist_df)
+    #             completed_items = len(checklist_df[checklist_df["Status"] == True])
+    #             completion_percentage = int((completed_items / total_items * 100) if total_items > 0 else 0)
+                
+    #             col1, col2, col3 = st.columns(3)
+                
+    #             with col1:
+    #                 st.metric("Total items", total_items)
+                
+    #             with col2:
+    #                 st.metric("Checked items", completed_items)
+                
+    #             with col3:
+    #                 st.metric("Progress", f"{completion_percentage}%")
+                
+    #             # Progress bar
+    #             st.progress(completion_percentage / 100)
+    #         else:
+    #             st.warning("Status column not found in checklist data.")
+            
+    #         # Display by section
+    #         try:
+    #             # Get list of sections
+    #             sections = gs_manager.get_worksheets("19ksIroX0i3WY3XmSGXQpdS1RzjpYKhqMhwK1tYiKZZA")
+    #             sections = [s for s in sections if s.startswith("Section") or s == "No Section"]
+                
+    #             # Progress data by section
+    #             section_progress = []
+                
+    #             for section in sections:
+    #                 section_df = gs_manager.get_data("19ksIroX0i3WY3XmSGXQpdS1RzjpYKhqMhwK1tYiKZZA", section)
+    #                 if not section_df.empty:
+    #                     total = len(section_df)
+    #                     # Check if Status column exists
+    #                     if "Status" in section_df.columns:
+    #                         completed = len(section_df[section_df["Status"] == True])
+    #                     else:
+    #                         completed = 0
+    #                     progress = int((completed / total * 100) if total > 0 else 0)
+                        
+    #                     section_progress.append({
+    #                         "Section": section,
+    #                         "Total": total,
+    #                         "Completed": completed,
+    #                         "Progress": progress
+    #                     })
+                
+    #             # Create DataFrame for display
+    #             progress_df = pd.DataFrame(section_progress)
+                
+    #             # Display DataFrame
+    #             st.subheader("Progress by section")
+    #             st.dataframe(
+    #                 progress_df,
+    #                 use_container_width=True,
+    #                 hide_index=True
+    #             )
+    #         except Exception as e:
+    #             st.error(f"Error loading section data: {e}")
+    #     else:
+    #         st.info("No checklist data available.")
+            
+    # Links to other pages
+    st.divider()
+    
+    st.subheader("Quick Access")
+    
+    # col1, col2 = st.columns(2)
+    (col1,) = st.columns(1)
+    
+    with col1:
+        st.page_link("pages/1_Orders.py", label="📦 Order Management", icon="🔗")
+        st.caption("Track and manage orders by booth")
+    
+    # with col2:
+    #     st.page_link("pages/2_Checklists.py", label="✅ Booth Checklist", icon="🔗")
+    #     st.caption("Check booths progress status")
