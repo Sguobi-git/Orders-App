@@ -87,6 +87,23 @@ if "users" not in st.session_state:
     st.session_state.users = load_users()
 
 # Login function
+# def login():
+#     if email_input.endswith("@expocci.com"):
+#         if email_input in st.session_state.users:
+#             # User exists, verify password
+#             if verify_password(st.session_state.users[email_input]["password_hash"], password_input):
+#                 st.session_state.authenticated = True
+#                 st.session_state.current_user = st.session_state.users[email_input]["initials"]
+#                 st.rerun()
+#             else:
+#                 st.error("Invalid password")
+#         else:
+#             st.error("User not found. Please use the registration form.")
+#     else:
+#         st.error("Please use your company email (@expocci.com)")
+
+
+# Modification 1: Update the login function to set the current_show automatically
 def login():
     if email_input.endswith("@expocci.com"):
         if email_input in st.session_state.users:
@@ -94,6 +111,9 @@ def login():
             if verify_password(st.session_state.users[email_input]["password_hash"], password_input):
                 st.session_state.authenticated = True
                 st.session_state.current_user = st.session_state.users[email_input]["initials"]
+                # Automatically set the current show to the first option
+                show_options = ["Miami Boat Show 2025", "New York Auto Show 2025", "Paris Expo 2025"]
+                st.session_state.current_show = show_options[0]
                 st.rerun()
             else:
                 st.error("Invalid password")
@@ -101,6 +121,7 @@ def login():
             st.error("User not found. Please use the registration form.")
     else:
         st.error("Please use your company email (@expocci.com)")
+
 
 # Registration function
 def register_user():
@@ -360,12 +381,19 @@ else:
 
     
     # Display user sidebar
+    # with st.sidebar:
+    #     st.write(f"**User:** {st.session_state.current_user}")
+        
+    #     # Show selector
+    #     st.divider()
+    #     st.subheader("Active Show")
     with st.sidebar:
         st.write(f"**User:** {st.session_state.current_user}")
         
-        # Show selector
+        # Show information (display only, not a selector)
         st.divider()
         st.subheader("Active Show")
+        st.info(f"{st.session_state.current_show}")
         
         # In a real application, you would load the list of shows from Google Sheets
         show_options = ["Miami Boat Show 2025", "New York Auto Show 2025", "Paris Expo 2025"]
@@ -488,12 +516,15 @@ else:
 
     
     # Main page (dashboard)
-    if st.session_state.current_show is None:
-        pass
-        # st.warning("Please select a show to continue.")
-    else:
-        st.title(f"🎪 {st.session_state.current_show}")
-        st.caption(f"General Dashboard")
+    # if st.session_state.current_show is None:
+    #     pass
+    #     # st.warning("Please select a show to continue.")
+    # else:
+    #     st.title(f"🎪 {st.session_state.current_show}")
+    #     st.caption(f"General Dashboard")
+
+    st.title(f"🎪 {st.session_state.current_show}")
+    st.caption(f"General Dashboard")
         
         # Loading data
         @st.cache_data(ttl=60)  # Cache for 1 minute
