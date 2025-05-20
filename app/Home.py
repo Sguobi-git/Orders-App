@@ -503,7 +503,7 @@ else:
         )
     
         # Workaround to detect button click via form (Streamlit doesn’t handle HTML buttons natively)
-        if st.experimental_get_query_params().get("clicked") == ["1"]:
+        if st.query_params().get("clicked") == ["1"]:
             st.session_state['show_button'] = False
             change_show()
     
