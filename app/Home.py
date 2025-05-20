@@ -500,8 +500,8 @@ else:
     
 
     # Initialize the state
-    if 'show_button' not in st.session_state:
-        st.session_state['show_button'] = True
+    # if 'show_button' not in st.session_state:
+    st.session_state['show_button'] = True
     
     # Only show the button if needed
     if st.session_state.show_button:
