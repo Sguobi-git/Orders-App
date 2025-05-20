@@ -461,9 +461,10 @@ else:
             st.write("")
             # Create a larger, centered button
             if st.button("Start", key="change_show_button"):
-                change_show()
                 # Hide the button after clicking
                 st.session_state['show_button'] = False
+                change_show()
+                
 
 
     
