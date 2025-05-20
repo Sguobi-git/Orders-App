@@ -187,20 +187,20 @@ def add_new_order():
 
 
 # Filter data according to criteria
-filtered_df = orders_df.copy()
+# filtered_df = orders_df.copy()
 
 # Section selector
 section_options = ["All Sections"] + sections
 selected_section = st.selectbox("Section", section_options)
 
 
-# Apply section filter
-if selected_section != "All Sections":
-    filtered_df = filtered_df[filtered_df["Section"] == selected_section]
+# # Apply section filter
+# if selected_section != "All Sections":
+#     filtered_df = filtered_df[filtered_df["Section"] == selected_section]
 
-# Apply status filter
-if selected_status != "All":
-    filtered_df = filtered_df[filtered_df["Status"] == selected_status]
+# # Apply status filter
+# if selected_status != "All":
+#     filtered_df = filtered_df[filtered_df["Status"] == selected_status]
 
 # Apply search filter
 if search_query:
