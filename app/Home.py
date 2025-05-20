@@ -573,6 +573,11 @@ else:
                 st.plotly_chart(fig, use_container_width=True)
             # ----------------------------------------------------------
 
+        # Button to refresh data
+        if st.button("Refresh data"):
+            st.cache_data.clear()
+            st.rerun()
+        
         # Dashboard sections
         tab1, tab2, tab3 = st.tabs(["Latest Orders", "Inventory", "Checklist Progress"])
         
@@ -733,17 +738,13 @@ else:
         
         st.subheader("Quick Access")
         
-        col1, col2 = st.columns(2)
+        # col1, col2 = st.columns(2)
+        (col1,) = st.columns(1)
         
         with col1:
             st.page_link("pages/1_Orders.py", label="📦 Order Management", icon="🔗")
             st.caption("Track and manage orders by booth")
         
-        with col2:
-            st.page_link("pages/2_Checklists.py", label="✅ Booth Checklist", icon="🔗")
-            st.caption("Check booths progress status")
-        
-        # Button to refresh data
-        if st.button("Refresh data"):
-            st.cache_data.clear()
-            st.rerun()
+        # with col2:
+        #     st.page_link("pages/2_Checklists.py", label="✅ Booth Checklist", icon="🔗")
+        #     st.caption("Check booths progress status")
