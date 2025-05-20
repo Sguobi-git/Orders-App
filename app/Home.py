@@ -454,10 +454,6 @@ else:
     
     # Only show the button if show_button is True
     if st.session_state.show_button:
-        # Create vertical space to push the button down
-        for _ in range(2):
-            st.write("")
-        
         # Create a column to control button width
         col1, col2, col3 = st.columns([1.5, 3, 1.5])
         with col2:
