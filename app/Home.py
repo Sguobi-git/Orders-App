@@ -474,56 +474,30 @@ else:
     if 'show_button' not in st.session_state:
         st.session_state['show_button'] = True
     
-    # Function to run when button is clicked
-    def change_show():
-        st.write("You clicked Start!")
+    # Only show the button if needed
+    if st.session_state.show_button:
+        # Use vertical space to center vertically (about halfway down the screen)
+        st.write("")
+        st.markdown("<br><br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
     
-    # Show the button only if state allows
-    if st.session_state['show_button']:
-        st.markdown(
-            """
-            <style>
-            .center-container {
-                height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            .center-button > button {
-                font-size: 1.5em;
-                padding: 0.75em 2em;
-            }
-            </style>
-            <div class="center-container">
-                <form action="" method="post">
-                    <button class="center-button" type="submit">Start</button>
-                </form>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        # Create centered columns
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.markdown(
+                """
+                <style>
+                div.stButton > button {
+                    font-size: 1.5em;
+                    padding: 0.75em 2em;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
     
-        # Workaround to detect button click via form (Streamlit doesn’t handle HTML buttons natively)
-        if st.experimental_get_query_params().get("clicked") == ["1"]:
-            st.session_state['show_button'] = False
-            change_show()
-    
-        # Add JS to simulate click by updating URL (so we can detect it in Streamlit)
-        st.markdown(
-            """
-            <script>
-            const form = document.querySelector("form");
-            if (form) {
-                form.addEventListener("submit", function(e) {
-                    e.preventDefault();
-                    window.location.search = '?clicked=1';
-                });
-            }
-            </script>
-            """,
-            unsafe_allow_html=True
-        )
-
+            if st.button("Start", key="change_show_button"):
+                st.session_state['show_button'] = False
+                change_show()
 
 
     
