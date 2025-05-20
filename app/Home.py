@@ -473,9 +473,9 @@ else:
     if 'show_button' not in st.session_state:
         st.session_state['show_button'] = True
     
-    # Function to run when button is clicked
-    def change_show():
-        st.write("You clicked Start!")
+    # # Function to run when button is clicked
+    # def change_show():
+    #     st.write("You clicked Start!")
     
     # Show the button only if state allows
     if st.session_state['show_button']:
