@@ -467,61 +467,39 @@ else:
                 
 
 
-    import streamlit as st
 
-    # Initialize the state
+    # Initialize session state
     if 'show_button' not in st.session_state:
         st.session_state['show_button'] = True
     
-    # # Function to run when button is clicked
-    # def change_show():
-    #     st.write("You clicked Start!")
+    # Function to call when button is clicked
+    def change_show():
+        st.write("You clicked Start!")  # Replace with your real logic
     
-    # Show the button only if state allows
+    # CSS to center content both vertically and horizontally
+    st.markdown("""
+        <style>
+        .centered-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        .centered-button {
+            font-size: 1.5em;
+            padding: 0.75em 2em;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
+    # Only show the button if session_state allows
     if st.session_state['show_button']:
-        st.markdown(
-            """
-            <style>
-            .center-container {
-                height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            .center-button > button {
-                font-size: 1.5em;
-                padding: 0.75em 2em;
-            }
-            </style>
-            <div class="center-container">
-                <form action="" method="post">
-                    <button class="center-button" type="submit">Start</button>
-                </form>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-    
-        # Workaround to detect button click via form (Streamlit doesn’t handle HTML buttons natively)
-        if st.query_params().get("clicked") == ["1"]:
+        st.markdown('<div class="centered-container">', unsafe_allow_html=True)
+        if st.button("Start", key="change_show_button"):
             st.session_state['show_button'] = False
             change_show()
-    
-        # Add JS to simulate click by updating URL (so we can detect it in Streamlit)
-        st.markdown(
-            """
-            <script>
-            const form = document.querySelector("form");
-            if (form) {
-                form.addEventListener("submit", function(e) {
-                    e.preventDefault();
-                    window.location.search = '?clicked=1';
-                });
-            }
-            </script>
-            """,
-            unsafe_allow_html=True
-        )
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 
