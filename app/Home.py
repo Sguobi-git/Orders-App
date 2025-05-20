@@ -356,6 +356,11 @@ else:
     if current_email and st.session_state.users[current_email].get("is_admin", False):
         is_admin = True
 
+
+    if 'show_button' not in st.session_state:
+        st.session_state['show_button'] = True
+
+    
     # Only show the button if show_button is True
     if st.session_state.show_button:
         # Create a column to control button width
@@ -365,7 +370,8 @@ else:
                 change_show()
                 # Hide the button after clicking
                 st.session_state.show_button = False
-        
+
+    
     # Display user sidebar
     with st.sidebar:
         st.write(f"**User:** {st.session_state.current_user}")
