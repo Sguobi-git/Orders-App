@@ -391,17 +391,17 @@ else:
         st.write(f"**User:** {st.session_state.current_user}")
         
         # Show information (display only, not a selector)
-        st.divider()
-        st.subheader("Active Show")
-        st.info(f"{st.session_state.current_show}")
+        # st.divider()
+        # st.subheader("Active Show")
+        # st.info(f"{st.session_state.current_show}")
         
-        # In a real application, you would load the list of shows from Google Sheets
-        show_options = ["Miami Boat Show 2025", "New York Auto Show 2025", "Paris Expo 2025"]
-        selected_show = st.selectbox(
-            "Select a show",
-            show_options,
-            index=0 if st.session_state.current_show is None else show_options.index(st.session_state.current_show)
-        )
+        # # In a real application, you would load the list of shows from Google Sheets
+        # show_options = ["Miami Boat Show 2025", "New York Auto Show 2025", "Paris Expo 2025"]
+        # selected_show = st.selectbox(
+        #     "Select a show",
+        #     show_options,
+        #     index=0 if st.session_state.current_show is None else show_options.index(st.session_state.current_show)
+        # )
         
         # if st.button("Change show", use_container_width=True):
         #     change_show()
@@ -523,8 +523,9 @@ else:
     #     st.title(f"🎪 {st.session_state.current_show}")
     #     st.caption(f"General Dashboard")
 
-    st.title(f"🎪 {st.session_state.current_show}")
-    st.caption(f"General Dashboard")
+    # st.title(f"🎪 {st.session_state.current_show}")
+    st.title(f"🎪 General Dashboard")
+    # st.caption(f"General Dashboard")
         
     # Loading data
     @st.cache_data(ttl=60)  # Cache for 1 minute
