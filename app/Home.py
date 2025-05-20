@@ -470,6 +470,7 @@ else:
     
     # Main page (dashboard)
     if st.session_state.current_show is None:
+        pass
         # st.warning("Please select a show to continue.")
     else:
         st.title(f"🎪 {st.session_state.current_show}")
