@@ -355,6 +355,9 @@ else:
     is_admin = False
     if current_email and st.session_state.users[current_email].get("is_admin", False):
         is_admin = True
+
+    if st.button("Start", use_container_width=True):
+    change_show()
     
     # Display user sidebar
     with st.sidebar:
@@ -372,8 +375,8 @@ else:
             index=0 if st.session_state.current_show is None else show_options.index(st.session_state.current_show)
         )
         
-        if st.button("Change show", use_container_width=True):
-            change_show()
+        # if st.button("Change show", use_container_width=True):
+        #     change_show()
         
         # Account settings
         st.divider()
