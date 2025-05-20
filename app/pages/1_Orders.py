@@ -466,67 +466,67 @@ with tab1:
             st.info("No orders available to delete.")
 
     edited_df = st.data_editor(
-            filtered_df[display_columns],
-            use_container_width=True,
-            hide_index=True,
-            column_config={
-                "Booth #": st.column_config.NumberColumn(
-                    "Booth #",
-                    width="small",
-                ),
-                "Section": st.column_config.TextColumn(
-                    "Section",
-                    width="medium",
-                ),
-                "Color": st.column_config.TextColumn(
-                    "Color",
-                    width="small",
-                ),
-                "Quantity": st.column_config.NumberColumn(
-                    "Quantity",
-                    width="small",
-                ),
-                "Date": st.column_config.TextColumn(
-                    "Date",
-                    width="small",
-                ),
-                "Hour": st.column_config.TextColumn(
-                    "Hour",
-                    width="small",
-                ),
-                "Status": st.column_config.SelectboxColumn(
-                    "Status",
-                    width="small",
-                    options=["In Process", "In route from warehouse", "Delivered", "Cancelled", "Received"],
-                ),
-                "Type": st.column_config.SelectboxColumn(
-                    "Type",
-                    width="small",
-                    options=["New Order", "Missing Item ", "Remove"],
-                ),
-                "Boomer's Quantity": st.column_config.NumberColumn(
-                    "Boomer's Quantity",
-                    width="small",
-                ),
-                "Comments": st.column_config.TextColumn(
-                    "Comments",
-                    width="medium",
-                ),
-                "User": st.column_config.TextColumn(
-                    "User",
-                    width="small",
-                ),
-                "Exhibitor Name": st.column_config.TextColumn(
-                    "Exhibitor Name",
-                    width="medium",
-                ),
-                "Item": st.column_config.TextColumn(
-                    "Item",
-                    width="medium",
-                ),
-            },
-            num_rows="dynamic",
-        )
+        filtered_df[display_columns],
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "Booth #": st.column_config.NumberColumn(
+                "Booth #",
+                width="small",
+            ),
+            "Section": st.column_config.TextColumn(
+                "Section",
+                width="medium",
+            ),
+            "Color": st.column_config.TextColumn(
+                "Color",
+                width="small",
+            ),
+            "Quantity": st.column_config.NumberColumn(
+                "Quantity",
+                width="small",
+            ),
+            "Date": st.column_config.TextColumn(
+                "Date",
+                width="small",
+            ),
+            "Hour": st.column_config.TextColumn(
+                "Hour",
+                width="small",
+            ),
+            "Status": st.column_config.SelectboxColumn(
+                "Status",
+                width="small",
+                options=["In Process", "In route from warehouse", "Delivered", "Cancelled", "Received"],
+            ),
+            "Type": st.column_config.SelectboxColumn(
+                "Type",
+                width="small",
+                options=["New Order", "Missing Item ", "Remove"],
+            ),
+            "Boomer's Quantity": st.column_config.NumberColumn(
+                "Boomer's Quantity",
+                width="small",
+            ),
+            "Comments": st.column_config.TextColumn(
+                "Comments",
+                width="medium",
+            ),
+            "User": st.column_config.TextColumn(
+                "User",
+                width="small",
+            ),
+            "Exhibitor Name": st.column_config.TextColumn(
+                "Exhibitor Name",
+                width="medium",
+            ),
+            "Item": st.column_config.TextColumn(
+                "Item",
+                width="medium",
+            ),
+        },
+        num_rows="dynamic",
+    )
 
 
         # Check if any modifications have been made
