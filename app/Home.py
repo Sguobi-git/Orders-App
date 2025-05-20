@@ -579,7 +579,8 @@ else:
             st.rerun()
         
         # Dashboard sections
-        tab1, tab2, tab3 = st.tabs(["Latest Orders", "Inventory", "Checklist Progress"])
+        # tab1, tab2, tab3 = st.tabs(["Latest Orders", "Inventory", "Checklist Progress"])
+        tab1, tab2 = st.tabs(["Latest Orders", "Inventory"])
         
         with tab1:
             if not orders_df.empty:
@@ -665,73 +666,73 @@ else:
             else:
                 st.info("No inventory data available.")
         
-        with tab3:
-            # Check if checklist_df is empty or not
-            if not checklist_df.empty:
-                # Check if Status column exists
-                if "Status" in checklist_df.columns:
-                    # Calculate checklist progress
-                    total_items = len(checklist_df)
-                    completed_items = len(checklist_df[checklist_df["Status"] == True])
-                    completion_percentage = int((completed_items / total_items * 100) if total_items > 0 else 0)
+        # with tab3:
+        #     # Check if checklist_df is empty or not
+        #     if not checklist_df.empty:
+        #         # Check if Status column exists
+        #         if "Status" in checklist_df.columns:
+        #             # Calculate checklist progress
+        #             total_items = len(checklist_df)
+        #             completed_items = len(checklist_df[checklist_df["Status"] == True])
+        #             completion_percentage = int((completed_items / total_items * 100) if total_items > 0 else 0)
                     
-                    col1, col2, col3 = st.columns(3)
+        #             col1, col2, col3 = st.columns(3)
                     
-                    with col1:
-                        st.metric("Total items", total_items)
+        #             with col1:
+        #                 st.metric("Total items", total_items)
                     
-                    with col2:
-                        st.metric("Checked items", completed_items)
+        #             with col2:
+        #                 st.metric("Checked items", completed_items)
                     
-                    with col3:
-                        st.metric("Progress", f"{completion_percentage}%")
+        #             with col3:
+        #                 st.metric("Progress", f"{completion_percentage}%")
                     
-                    # Progress bar
-                    st.progress(completion_percentage / 100)
-                else:
-                    st.warning("Status column not found in checklist data.")
+        #             # Progress bar
+        #             st.progress(completion_percentage / 100)
+        #         else:
+        #             st.warning("Status column not found in checklist data.")
                 
-                # Display by section
-                try:
-                    # Get list of sections
-                    sections = gs_manager.get_worksheets("19ksIroX0i3WY3XmSGXQpdS1RzjpYKhqMhwK1tYiKZZA")
-                    sections = [s for s in sections if s.startswith("Section") or s == "No Section"]
+        #         # Display by section
+        #         try:
+        #             # Get list of sections
+        #             sections = gs_manager.get_worksheets("19ksIroX0i3WY3XmSGXQpdS1RzjpYKhqMhwK1tYiKZZA")
+        #             sections = [s for s in sections if s.startswith("Section") or s == "No Section"]
                     
-                    # Progress data by section
-                    section_progress = []
+        #             # Progress data by section
+        #             section_progress = []
                     
-                    for section in sections:
-                        section_df = gs_manager.get_data("19ksIroX0i3WY3XmSGXQpdS1RzjpYKhqMhwK1tYiKZZA", section)
-                        if not section_df.empty:
-                            total = len(section_df)
-                            # Check if Status column exists
-                            if "Status" in section_df.columns:
-                                completed = len(section_df[section_df["Status"] == True])
-                            else:
-                                completed = 0
-                            progress = int((completed / total * 100) if total > 0 else 0)
+        #             for section in sections:
+        #                 section_df = gs_manager.get_data("19ksIroX0i3WY3XmSGXQpdS1RzjpYKhqMhwK1tYiKZZA", section)
+        #                 if not section_df.empty:
+        #                     total = len(section_df)
+        #                     # Check if Status column exists
+        #                     if "Status" in section_df.columns:
+        #                         completed = len(section_df[section_df["Status"] == True])
+        #                     else:
+        #                         completed = 0
+        #                     progress = int((completed / total * 100) if total > 0 else 0)
                             
-                            section_progress.append({
-                                "Section": section,
-                                "Total": total,
-                                "Completed": completed,
-                                "Progress": progress
-                            })
+        #                     section_progress.append({
+        #                         "Section": section,
+        #                         "Total": total,
+        #                         "Completed": completed,
+        #                         "Progress": progress
+        #                     })
                     
-                    # Create DataFrame for display
-                    progress_df = pd.DataFrame(section_progress)
+        #             # Create DataFrame for display
+        #             progress_df = pd.DataFrame(section_progress)
                     
-                    # Display DataFrame
-                    st.subheader("Progress by section")
-                    st.dataframe(
-                        progress_df,
-                        use_container_width=True,
-                        hide_index=True
-                    )
-                except Exception as e:
-                    st.error(f"Error loading section data: {e}")
-            else:
-                st.info("No checklist data available.")
+        #             # Display DataFrame
+        #             st.subheader("Progress by section")
+        #             st.dataframe(
+        #                 progress_df,
+        #                 use_container_width=True,
+        #                 hide_index=True
+        #             )
+        #         except Exception as e:
+        #             st.error(f"Error loading section data: {e}")
+        #     else:
+        #         st.info("No checklist data available.")
                 
         # Links to other pages
         st.divider()
