@@ -364,12 +364,15 @@ else:
     # Only show the button if show_button is True
     if st.session_state.show_button:
         # Create a column to control button width
-        col1, col2, col3 = st.columns([1, 2, 1])
+        col1, col2, col3 = st.columns([1.5, 3, 1.5])
         with col2:
-            if st.button("Start"):
+            # Add some vertical space
+            st.write("")
+            # Create a larger, centered button
+            if st.button("Start", key="change_show_button"):
                 change_show()
                 # Hide the button after clicking
-                st.session_state.show_button = False
+                st.session_state['show_button'] = False
 
     
     # Display user sidebar
