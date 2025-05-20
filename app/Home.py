@@ -357,8 +357,8 @@ else:
         is_admin = True
 
     if st.button("Start", use_container_width=True):
-    change_show()
-    
+        change_show()
+        
     # Display user sidebar
     with st.sidebar:
         st.write(f"**User:** {st.session_state.current_user}")
