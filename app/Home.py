@@ -472,11 +472,11 @@ else:
     if 'show_button' not in st.session_state:
         st.session_state['show_button'] = True
     
-    # Function to call when button is clicked
+    # Action to perform when button is clicked
     def change_show():
-        st.write("You clicked Start!")  # Replace with your real logic
+        st.write("You clicked Start!")  # Replace this with your real logic
     
-    # CSS to center content both vertically and horizontally
+    # Centering CSS
     st.markdown("""
         <style>
         .centered-container {
@@ -486,21 +486,20 @@ else:
             transform: translate(-50%, -50%);
             text-align: center;
         }
-        .centered-button {
+        .centered-button > button {
             font-size: 1.5em;
             padding: 0.75em 2em;
         }
         </style>
     """, unsafe_allow_html=True)
     
-    # Only show the button if session_state allows
+    # Show button if allowed
     if st.session_state['show_button']:
         st.markdown('<div class="centered-container">', unsafe_allow_html=True)
         if st.button("Start", key="change_show_button"):
             st.session_state['show_button'] = False
             change_show()
         st.markdown('</div>', unsafe_allow_html=True)
-
 
 
     
