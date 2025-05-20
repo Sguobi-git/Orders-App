@@ -472,30 +472,28 @@ else:
     
     # Only show the button if needed
     if st.session_state.show_button:
-        # Use HTML/CSS to center vertically
-        st.markdown(
-            """
-            <style>
-            .centered-button {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 90vh; /* Full viewport height */
-            }
-            </style>
-            <div class="centered-button">
-            """,
-            unsafe_allow_html=True,
-        )
+        # Use vertical space to center vertically (about halfway down the screen)
+        st.write("")
+        st.markdown("<br><br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
     
-        # Horizontally center using columns
+        # Create centered columns
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
+            st.markdown(
+                """
+                <style>
+                div.stButton > button {
+                    font-size: 1.5em;
+                    padding: 0.75em 2em;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+    
             if st.button("Start", key="change_show_button"):
                 st.session_state['show_button'] = False
                 change_show()
-    
-        st.markdown("</div>", unsafe_allow_html=True)
     
 
     
