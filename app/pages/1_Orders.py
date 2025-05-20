@@ -407,16 +407,26 @@ with tab1:
                     key="delete_order_selectbox"
                 )
 
-                # Get the selected row index
-                selected_idx = None
-                for option in order_options:
-                    if option[0] == selected_order_text:
-                        selected_idx = option[1]
-                        break
+                # # Get the selected row index
+                # selected_idx = None
+                # for option in order_options:
+                #     if option[0] == selected_order_text:
+                #         selected_idx = option[1]
+                #         break
 
-                # Get the selected row data
-                if selected_idx is not None:
+                # # Get the selected row data
+                # if selected_idx is not None:
+                #     selected_row = filtered_df.iloc[selected_idx]
+
+                # Get the selected row index safely
+                selected_idx = next((i for text, i in order_options if text == selected_order_text), None)
+                
+                # Ensure index is in bounds
+                if selected_idx is not None and 0 <= selected_idx < len(filtered_df):
                     selected_row = filtered_df.iloc[selected_idx]
+
+
+                
 
                     # Delete button with confirmation
                     if st.button("Delete Selected Order", key="delete_order_button"):
