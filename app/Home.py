@@ -448,24 +448,55 @@ else:
             logout()
 
 
-    if 'show_button' not in st.session_state:
-        st.session_state['show_button'] = True
+    # if 'show_button' not in st.session_state:
+    #     st.session_state['show_button'] = True
 
     
-    # Only show the button if show_button is True
-    if st.session_state.show_button:
-        # Create a column to control button width
-        col1, col2, col3 = st.columns([1.5, 3, 1.5])
-        with col2:
-            # Add some vertical space
-            st.write("")
-            # Create a larger, centered button
-            if st.button("Start", key="change_show_button"):
-                # Hide the button after clicking
-                st.session_state['show_button'] = False
-                change_show()
+    # # Only show the button if show_button is True
+    # if st.session_state.show_button:
+    #     # Create a column to control button width
+    #     col1, col2, col3 = st.columns([1.5, 3, 1.5])
+    #     with col2:
+    #         # Add some vertical space
+    #         st.write("")
+    #         # Create a larger, centered button
+    #         if st.button("Start", key="change_show_button"):
+    #             # Hide the button after clicking
+    #             st.session_state['show_button'] = False
+    #             change_show()
                 
 
+    # Initialize the state
+    if 'show_button' not in st.session_state:
+        st.session_state['show_button'] = True
+    
+    # Only show the button if needed
+    if st.session_state.show_button:
+        # Use HTML/CSS to center vertically
+        st.markdown(
+            """
+            <style>
+            .centered-button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 90vh; /* Full viewport height */
+            }
+            </style>
+            <div class="centered-button">
+            """,
+            unsafe_allow_html=True,
+        )
+    
+        # Horizontally center using columns
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button("Start", key="change_show_button"):
+                st.session_state['show_button'] = False
+                change_show()
+    
+        st.markdown("</div>", unsafe_allow_html=True)
+    
 
     
     # Main page (dashboard)
