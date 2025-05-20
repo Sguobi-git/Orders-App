@@ -94,6 +94,35 @@ def login():
             if verify_password(st.session_state.users[email_input]["password_hash"], password_input):
                 st.session_state.authenticated = True
                 st.session_state.current_user = st.session_state.users[email_input]["initials"]
+                # Initialize the state
+                if 'show_button' not in st.session_state:
+                    st.session_state['show_button'] = True
+                
+                # Only show the button if needed
+                if st.session_state.show_button:
+                    # Use vertical space to center vertically (about halfway down the screen)
+                    st.write("")
+                    st.markdown("<br><br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
+                
+                    # Create centered columns
+                    col1, col2, col3 = st.columns([1, 2, 1])
+                    with col2:
+                        st.markdown(
+                            """
+                            <style>
+                            div.stButton > button {
+                                font-size: 1.5em;
+                                padding: 0.75em 2em;
+                            }
+                            </style>
+                            """,
+                            unsafe_allow_html=True
+                        )
+                
+                        if st.button("Start", key="change_show_button"):
+                            st.session_state['show_button'] = False
+                            change_show()
+
                 st.rerun()
             else:
                 st.error("Invalid password")
@@ -318,35 +347,6 @@ if not st.session_state.authenticated:
             if st.button("Login", use_container_width=True, key="login_button"):
                 if email_input and password_input:
                     login()
-                    # Initialize the state
-                    if 'show_button' not in st.session_state:
-                        st.session_state['show_button'] = True
-                    
-                    # Only show the button if needed
-                    if st.session_state.show_button:
-                        # Use vertical space to center vertically (about halfway down the screen)
-                        st.write("")
-                        st.markdown("<br><br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
-                    
-                        # Create centered columns
-                        col1, col2, col3 = st.columns([1, 2, 1])
-                        with col2:
-                            st.markdown(
-                                """
-                                <style>
-                                div.stButton > button {
-                                    font-size: 1.5em;
-                                    padding: 0.75em 2em;
-                                }
-                                </style>
-                                """,
-                                unsafe_allow_html=True
-                            )
-                    
-                            if st.button("Start", key="change_show_button"):
-                                st.session_state['show_button'] = False
-                                change_show()
-
                 else:
                     st.error("Please enter both email and password")
         
