@@ -74,3 +74,6 @@ def forum_page():
                             reply_to_message(idx, admin_reply)
                             st.success("✅ Reply sent!")
 
+
+if __name__ == "__main__":
+    forum_page()
