@@ -1,26 +1,76 @@
-# feedback_page.py
 import streamlit as st
-from datetime import datetime
+import json
 import os
+from datetime import datetime
 
-def feedback_page():
-    st.title("💬 Send us your Feedback or Questions")
+DATA_FILE = "forum_feedback.json"
 
-    st.write("We value your opinion! Fill out the form below to get in touch with us.")
+# Load existing messages
+def load_messages():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    else:
+        return []
+
+# Save messages to JSON
+def save_messages(messages):
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(messages, f, indent=2)
+
+# Add new message
+def add_message(name, email, message):
+    messages = load_messages()
+    messages.append({
+        "name": name,
+        "email": email,
+        "message": message,
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "reply": None
+    })
+    save_messages(messages)
+
+# Add reply to a message
+def reply_to_message(index, reply):
+    messages = load_messages()
+    messages[index]["reply"] = reply
+    save_messages(messages)
+
+# Streamlit app
+def forum_page():
+    st.title("💬 Feedback Forum")
 
     with st.form("feedback_form"):
         name = st.text_input("Your Name")
         email = st.text_input("Your Email")
-        message = st.text_area("Your Message", height=150)
-        submitted = st.form_submit_button("Send")
+        message = st.text_area("Your Message")
+        submitted = st.form_submit_button("Submit")
 
-        if submitted:
-            # Save to a text file (or change to saving to database / Google Sheet)
-            with open("feedback_messages.txt", "a") as f:
-                f.write(f"\n---\nDate: {datetime.now()}\nName: {name}\nEmail: {email}\nMessage: {message}\n")
-            
-            st.success("✅ Thank you for your message! We'll get back to you soon.")
+        if submitted and name and message:
+            add_message(name, email, message)
+            st.success("✅ Message sent successfully!")
 
+    st.markdown("---")
+    st.subheader("📨 Previous Feedback")
 
-if __name__ == "__main__":
-    feedback_page()
+    messages = load_messages()
+    if not messages:
+        st.info("No messages yet. Be the first to write!")
+    else:
+        for i, msg in enumerate(reversed(messages)):
+            idx = len(messages) - 1 - i  # to keep correct index
+            with st.expander(f"🧾 {msg['name']} ({msg['timestamp']})"):
+                st.write(msg["message"])
+                st.caption(f"📧 {msg['email']}")
+
+                if msg["reply"]:
+                    st.success(f"💬 Admin reply: {msg['reply']}")
+                else:
+                    # Optional: only allow admin to reply
+                    with st.form(f"reply_form_{i}"):
+                        admin_reply = st.text_input("Reply as Admin")
+                        reply_submit = st.form_submit_button("Send Reply")
+                        if reply_submit and admin_reply:
+                            reply_to_message(idx, admin_reply)
+                            st.success("✅ Reply sent!")
+
