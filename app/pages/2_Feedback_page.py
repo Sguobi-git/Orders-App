@@ -23,14 +23,17 @@ def save_messages(messages):
 # Add new message
 def add_message(name, email, message):
     messages = load_messages()
+    eastern = pytz.timezone("America/New_York")
+    now_eastern = datetime.now(eastern)
     messages.append({
         "name": name,
         "email": email,
         "message": message,
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "timestamp": now_eastern.strftime("%Y-%m-%d %H:%M:%S"),
         "reply": None
     })
     save_messages(messages)
+
 
 # Add reply to a message
 def reply_to_message(index, reply):
