@@ -8,7 +8,6 @@ import os
 from datetime import datetime
 # from data.data_manager import GoogleSheetsManager
 from data.test_data_manager import GoogleSheetsManager
-from feedback_page import feedback_page
 
 
 # For pie chart
