@@ -20,3 +20,7 @@ def feedback_page():
                 f.write(f"\n---\nDate: {datetime.now()}\nName: {name}\nEmail: {email}\nMessage: {message}\n")
             
             st.success("✅ Thank you for your message! We'll get back to you soon.")
+
+
+if __name__ == "__main__":
+    feedback_page()
